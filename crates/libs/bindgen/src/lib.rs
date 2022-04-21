@@ -108,15 +108,14 @@ fn gen_type_impl(def: &Type, gen: &Gen) -> TokenStream {
     match def {
         Type::Field(def) => constants::gen(def, gen),
         Type::TypeDef(def) => {
-            let def = &def.clone().with_generics();
             match def.kind() {
                 TypeKind::Class => classes::gen(def, gen),
-                TypeKind::Interface => interfaces::gen(def, gen),
+                TypeKind::Interface => interfaces::gen(&def.clone().with_generics(), gen),
                 TypeKind::Enum => enums::gen(def, gen),
                 TypeKind::Struct => structs::gen(def, gen),
                 TypeKind::Delegate => {
                     if def.is_winrt() {
-                        delegates::gen(def, gen)
+                        delegates::gen(&def.clone().with_generics(), gen)
                     } else {
                         callbacks::gen(def, gen)
                     }

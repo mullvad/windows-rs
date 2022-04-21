@@ -47,7 +47,7 @@ impl Default for Type {
 
 impl From<TypeDef> for Type {
     fn from(def: TypeDef) -> Self {
-        Self::TypeDef(def.with_generics())
+        Self::TypeDef(def)
     }
 }
 
