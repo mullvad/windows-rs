@@ -106,6 +106,35 @@ pub struct IClass_Vtbl {
     pub Property: unsafe extern "system" fn(this: *mut ::core::ffi::c_void, result__: *mut i32) -> ::windows::core::HRESULT,
     pub SetProperty: unsafe extern "system" fn(this: *mut ::core::ffi::c_void, value: i32) -> ::windows::core::HRESULT,
 }
+#[doc(hidden)]
+#[repr(transparent)]
+pub struct IStaticClassStatics(::windows::core::IUnknown);
+unsafe impl ::windows::core::Interface for IStaticClassStatics {
+    type Vtable = IStaticClassStatics_Vtbl;
+    const IID: ::windows::core::GUID = ::windows::core::GUID::from_u128(0xbc3cc5c8_6570_5e91_8a9c_e96a918ea73e);
+}
+#[repr(C)]
+#[doc(hidden)]
+pub struct IStaticClassStatics_Vtbl {
+    pub base__: ::windows::core::IInspectableVtbl,
+    pub Property: unsafe extern "system" fn(this: *mut ::core::ffi::c_void, result__: *mut i32) -> ::windows::core::HRESULT,
+}
+pub struct StaticClass {}
+impl StaticClass {
+    pub fn Property() -> ::windows::core::Result<i32> {
+        Self::IStaticClassStatics(|this| unsafe {
+            let mut result__: i32 = ::core::mem::zeroed();
+            (::windows::core::Interface::vtable(this).Property)(::core::mem::transmute_copy(this), &mut result__).from_abi::<i32>(result__)
+        })
+    }
+    pub fn IStaticClassStatics<R, F: FnOnce(&IStaticClassStatics) -> ::windows::core::Result<R>>(callback: F) -> ::windows::core::Result<R> {
+        static mut SHARED: ::windows::core::FactoryCache<StaticClass, IStaticClassStatics> = ::windows::core::FactoryCache::new();
+        unsafe { SHARED.call(callback) }
+    }
+}
+impl ::windows::core::RuntimeName for StaticClass {
+    const NAME: &'static str = "test_nightly_component.StaticClass";
+}
 pub trait IClass_Impl: Sized {
     fn Property(&self) -> ::windows::core::Result<i32>;
     fn SetProperty(&self, value: i32) -> ::windows::core::Result<()>;
@@ -140,5 +169,31 @@ impl IClass_Vtbl {
     }
     pub fn matches(iid: &windows::core::GUID) -> bool {
         iid == &<IClass as ::windows::core::Interface>::IID
+    }
+}
+pub trait IStaticClassStatics_Impl: Sized {
+    fn Property(&self) -> ::windows::core::Result<i32>;
+}
+impl ::windows::core::RuntimeName for IStaticClassStatics {
+    const NAME: &'static str = "test_nightly_component.IStaticClassStatics";
+}
+impl IStaticClassStatics_Vtbl {
+    pub const fn new<Identity: ::windows::core::IUnknownImpl, Impl: IStaticClassStatics_Impl, const OFFSET: isize>() -> IStaticClassStatics_Vtbl {
+        unsafe extern "system" fn Property<Identity: ::windows::core::IUnknownImpl, Impl: IStaticClassStatics_Impl, const OFFSET: isize>(this: *mut ::core::ffi::c_void, result__: *mut i32) -> ::windows::core::HRESULT {
+            let this = (this as *mut ::windows::core::RawPtr).offset(OFFSET) as *mut Identity;
+            let this = (*this).get_impl() as *mut Impl;
+            match (*this).Property() {
+                ::core::result::Result::Ok(ok__) => {
+                    *result__ = ::core::mem::transmute_copy(&ok__);
+                    ::core::mem::forget(ok__);
+                    ::windows::core::HRESULT(0)
+                }
+                ::core::result::Result::Err(err) => err.into(),
+            }
+        }
+        Self { base__: ::windows::core::IInspectableVtbl::new::<Identity, IStaticClassStatics, OFFSET>(), Property: Property::<Identity, Impl, OFFSET> }
+    }
+    pub fn matches(iid: &windows::core::GUID) -> bool {
+        iid == &<IStaticClassStatics as ::windows::core::Interface>::IID
     }
 }

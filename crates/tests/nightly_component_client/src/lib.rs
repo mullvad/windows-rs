@@ -20,5 +20,7 @@ fn test() -> Result<()> {
     let inspectable: IInspectable = class.into();
     // Notice GetRuntimeClassName returns the specific interface name.
     assert_eq!(inspectable.GetRuntimeClassName()?, "test_nightly_component.IClass");
+
+    assert_eq!(StaticClass::Property()?, 123);
     Ok(())
 }

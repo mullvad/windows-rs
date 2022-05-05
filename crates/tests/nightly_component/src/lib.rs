@@ -29,10 +29,26 @@ impl IActivationFactory_Impl for ClassFactory {
     }
 }
 
+#[implement(IActivationFactory, bindings::IStaticClassStatics)]
+struct StaticClassFactory;
+
+impl IActivationFactory_Impl for StaticClassFactory {
+    fn ActivateInstance(&self) -> Result<IInspectable> {
+        Err(E_NOTIMPL.into())
+    }
+}
+
+impl bindings::IStaticClassStatics_Impl for StaticClassFactory {
+    fn Property(&self) -> Result<i32> {
+        Ok(123)
+    }
+}
+
 #[no_mangle]
 unsafe extern "stdcall" fn DllGetActivationFactory(name: ManuallyDrop<HSTRING>, result: *mut *mut std::ffi::c_void) -> HRESULT {
     let factory: Option<IActivationFactory> = match name.to_string().as_str() {
         "test_nightly_component.Class" => Some(ClassFactory.into()),
+        "test_nightly_component.StaticClass" => Some(StaticClassFactory.into()),
         _ => None,
     };
 
